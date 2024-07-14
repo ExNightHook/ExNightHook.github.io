@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: url('https://s02.yapfiles.ru/files/2185262/e191a896209c083e069cc0c99b8c003d.gif') no-repeat center center fixed;
+            background: url('https://raw.githubusercontent.com/ExNightHook/ExNightHook.github.io/main/e191a896209c083e069cc0c99b8c003d.gif') no-repeat center center fixed;
             background-size: cover;
             margin: 0;
             height: 100vh;
@@ -41,7 +41,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('https://s02.yapfiles.ru/files/2185262/e191a896209c083e069cc0c99b8c003d.gif') no-repeat center center;
+            background: url('https://raw.githubusercontent.com/ExNightHook/ExNightHook.github.io/main/e191a896209c083e069cc0c99b8c003d.gif') no-repeat center center;
             background-size: cover;
             filter: blur(5px);
             z-index: 0;
@@ -77,11 +77,57 @@
             font-size: 1.5em;
         }
 
+        h4 {
+            margin: 0;
+            transform: translateX(+165%);
+            color: white;
+            text-shadow: 0 0 3px #ffffff, 0 0 7px #ffffff, 0 0 13px #ffffff;
+            position: absolute;
+            font-size: 1.5em;
+        }
+
+        h5 {
+            margin: 0;
+            transform: translateX(+80%);
+            color: white;
+            text-shadow: 0 0 3px #ffffff, 0 0 7px #ffffff, 0 0 13px #ffffff;
+            position: absolute;
+            font-size: 1.5em;
+        }
+
+        h6 {
+            margin: 0;
+            transform: translateX(+80%);
+            color: white;
+            text-shadow: 0 0 3px #ffffff, 0 0 7px #ffffff, 0 0 13px #ffffff;
+            position: absolute;
+            font-size: 1.5em;
+        }
+
+        h7 {
+            margin: 0;
+            transform: translateX(+7%);
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 0 3px #ffffff, 0 0 7px #ffffff, 0 0 13px #ffffff;
+            position: absolute;
+            font-size: 1.5em;
+        }
+
         .container {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            margin-top: 300px;
+            margin-top: 100px;
+            transform: translateX(-200%);
+        }
+
+        .container2 {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 100px;
+            transform: translateX(+200%);
         }
 
         .box {
@@ -92,7 +138,7 @@
             padding: 20px;
             transition: transform 0.3s;
             border: 2px solid #fff;
-            margin: 0 20px;
+            margin: 20px 0;
             position: relative;
             z-index: 1;
         }
@@ -129,6 +175,20 @@
     <div class="box" onclick="window.location.href = ''">
         <h3>DayZ</h3>
         <p class="on-update">on update</p>
+    </div>
+    <div class="box" onclick="window.location.href = ''">
+        <h4>Rust</h4>
+        <p class="on-update">on update</p>
+    </div>
+</div>
+<div class="container2">
+<div class="box" onclick="window.location.href = ''">
+        <h5>Warface</h5>
+        <p class="on-update">in developing</p>
+    </div>
+    <div class="box" onclick="window.location.href = ''">
+        <h7>Grand Theft Auto V</h7>
+        <p class="on-update">in developing</p>
     </div>
 </div>
 <h1>ExNightHook</h1>
