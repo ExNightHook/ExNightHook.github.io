@@ -7,13 +7,14 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: url('https://raw.githubusercontent.com/ExNightHook/ExNightHook.github.io/main/01.gif') no-repeat center center fixed;
+            background: url('https://raw.githubusercontent.com/ExNightHook/ExNightHook.github.io/main/e191a896209c083e069cc0c99b8c003d.gif') no-repeat center center fixed;
             background-size: cover;
             margin: 0;
             height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
+            align-items: center;
+            flex-direction: column;
         }
 
         .loader {
@@ -41,7 +42,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('https://raw.githubusercontent.com/ExNightHook/ExNightHook.github.io/main/01.gif') no-repeat center center;
+            background: url('https://raw.githubusercontent.com/ExNightHook/ExNightHook.github.io/main/e191a896209c083e069cc0c99b8c003d.gif') no-repeat center center;
             background-size: cover;
             filter: blur(5px);
             z-index: 0;
@@ -59,75 +60,12 @@
             text-shadow: 0 0 3px #ffffff, 0 0 7px #ffffff, 0 0 13px #ffffff;
         }
 
-        h2 {
-            margin: 0;
-            transform: translateX(+15%);
-            color: white;
-            text-shadow: 0 0 3px #ffffff, 0 0 7px #ffffff, 0 0 13px #ffffff;
-            position: absolute;
-            font-size: 1.5em;
-        }
-
-        h3 {
-            margin: 0;
-            transform: translateX(+150%);
-            color: white;
-            text-shadow: 0 0 3px #ffffff, 0 0 7px #ffffff, 0 0 13px #ffffff;
-            position: absolute;
-            font-size: 1.5em;
-        }
-
-        h4 {
-            margin: 0;
-            transform: translateX(+165%);
-            color: white;
-            text-shadow: 0 0 3px #ffffff, 0 0 7px #ffffff, 0 0 13px #ffffff;
-            position: absolute;
-            font-size: 1.5em;
-        }
-
-        h5 {
-            margin: 0;
-            transform: translateX(+80%);
-            color: white;
-            text-shadow: 0 0 3px #ffffff, 0 0 7px #ffffff, 0 0 13px #ffffff;
-            position: absolute;
-            font-size: 1.5em;
-        }
-
-        h6 {
-            margin: 0;
-            transform: translateX(+80%);
-            color: white;
-            text-shadow: 0 0 3px #ffffff, 0 0 7px #ffffff, 0 0 13px #ffffff;
-            position: absolute;
-            font-size: 1.5em;
-        }
-
-        h7 {
-            margin: 0;
-            transform: translateX(+7%);
-            font-weight: bold;
-            color: white;
-            text-shadow: 0 0 3px #ffffff, 0 0 7px #ffffff, 0 0 13px #ffffff;
-            position: absolute;
-            font-size: 1.5em;
-        }
-
         .container {
             display: flex;
-            flex-direction: column;
+            flex-wrap: wrap;
+            justify-content: center;
             align-items: center;
             margin-top: 100px;
-            transform: translateX(-200%);
-        }
-
-        .container2 {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 100px;
-            transform: translateX(+200%);
         }
 
         .box {
@@ -138,9 +76,14 @@
             padding: 20px;
             transition: transform 0.3s;
             border: 2px solid #fff;
-            margin: 20px 0;
+            margin: 20px;
             position: relative;
             z-index: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
         }
 
         .box:hover {
@@ -162,11 +105,19 @@
             display: none;
         }
 
+        h2, h3, h4, h5, h7 {
+            margin: 0;
+            color: white;
+            text-shadow: 0 0 3px #ffffff, 0 0 7px #ffffff, 0 0 13px #ffffff;
+            font-size: 1.5em;
+        }
+
     </style>
 </head>
 <body>
 <div class="loader"></div>
 <div class="blur"></div>
+<h1>ExNightHook</h1>
 <div class="container">
     <div class="box" onclick="window.location.href = 'https://github.com/ExNightHook/ExNightHook.github.io/releases/download/cs2/cs2.zip'">
         <h2>Counter-Strike 2</h2>
@@ -180,9 +131,7 @@
         <h4>Rust</h4>
         <p class="on-update">on update</p>
     </div>
-</div>
-<div class="container2">
-<div class="box" onclick="window.location.href = ''">
+    <div class="box" onclick="window.location.href = ''">
         <h5>Warface</h5>
         <p class="on-update">in developing</p>
     </div>
@@ -191,6 +140,5 @@
         <p class="on-update">in developing</p>
     </div>
 </div>
-<h1>ExNightHook</h1>
 </body>
 </html>
