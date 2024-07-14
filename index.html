@@ -13,8 +13,7 @@
             height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: center;
-            flex-direction: column;
+            align-items: flex-start;
         }
 
         .loader {
@@ -60,12 +59,75 @@
             text-shadow: 0 0 3px #ffffff, 0 0 7px #ffffff, 0 0 13px #ffffff;
         }
 
+        h2 {
+            margin: 0;
+            transform: translateX(+15%);
+            color: white;
+            text-shadow: 0 0 3px #ffffff, 0 0 7px #ffffff, 0 0 13px #ffffff;
+            position: absolute;
+            font-size: 1.5em;
+        }
+
+        h3 {
+            margin: 0;
+            transform: translateX(+150%);
+            color: white;
+            text-shadow: 0 0 3px #ffffff, 0 0 7px #ffffff, 0 0 13px #ffffff;
+            position: absolute;
+            font-size: 1.5em;
+        }
+
+        h4 {
+            margin: 0;
+            transform: translateX(+165%);
+            color: white;
+            text-shadow: 0 0 3px #ffffff, 0 0 7px #ffffff, 0 0 13px #ffffff;
+            position: absolute;
+            font-size: 1.5em;
+        }
+
+        h5 {
+            margin: 0;
+            transform: translateX(+80%);
+            color: white;
+            text-shadow: 0 0 3px #ffffff, 0 0 7px #ffffff, 0 0 13px #ffffff;
+            position: absolute;
+            font-size: 1.5em;
+        }
+
+        h6 {
+            margin: 0;
+            transform: translateX(+80%);
+            color: white;
+            text-shadow: 0 0 3px #ffffff, 0 0 7px #ffffff, 0 0 13px #ffffff;
+            position: absolute;
+            font-size: 1.5em;
+        }
+
+        h7 {
+            margin: 0;
+            transform: translateX(+7%);
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 0 3px #ffffff, 0 0 7px #ffffff, 0 0 13px #ffffff;
+            position: absolute;
+            font-size: 1.5em;
+        }
+
         .container {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             margin-top: 100px;
+            transform: translateX(-200%);
+        }
+
+        .container2 {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 100px;
+            transform: translateX(+200%);
         }
 
         .box {
@@ -76,14 +138,9 @@
             padding: 20px;
             transition: transform 0.3s;
             border: 2px solid #fff;
-            margin: 20px;
+            margin: 20px 0;
             position: relative;
             z-index: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
         }
 
         .box:hover {
@@ -105,19 +162,11 @@
             display: none;
         }
 
-        h2, h3, h4, h5, h7 {
-            margin: 0;
-            color: white;
-            text-shadow: 0 0 3px #ffffff, 0 0 7px #ffffff, 0 0 13px #ffffff;
-            font-size: 1.5em;
-        }
-
     </style>
 </head>
 <body>
 <div class="loader"></div>
 <div class="blur"></div>
-<h1>ExNightHook</h1>
 <div class="container">
     <div class="box" onclick="window.location.href = 'https://github.com/ExNightHook/ExNightHook.github.io/releases/download/cs2/cs2.zip'">
         <h2>Counter-Strike 2</h2>
@@ -131,7 +180,9 @@
         <h4>Rust</h4>
         <p class="on-update">on update</p>
     </div>
-    <div class="box" onclick="window.location.href = ''">
+</div>
+<div class="container2">
+<div class="box" onclick="window.location.href = ''">
         <h5>Warface</h5>
         <p class="on-update">in developing</p>
     </div>
@@ -140,5 +191,6 @@
         <p class="on-update">in developing</p>
     </div>
 </div>
+<h1>ExNightHook</h1>
 </body>
 </html>
