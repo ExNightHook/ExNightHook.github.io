@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KeyAuth Chat Example</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url('https://raw.githubusercontent.com/ExNightHook/ExNightHook.github.io/main/01.gif') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+        }
+
+        h1 {
+            text-shadow: 0 0 3px #ffffff, 0 0 7px #ffffff, 0 0 13px #ffffff;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        #chat {
+            display: none;
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+
+        #messages {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 200px;
+            overflow-y: scroll;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            margin: 5px;
+        }
+
+        button {
+            padding: 10px 15px;
+            border-radius: 20px;
+            border: 2px solid #fff;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(1.05);
+        }
+
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            animation: fadeOut 2s forwards;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+    </style>
+</head>
+<body>
+    <div class="loader"></div>
+    <h1>KeyAuth Chat Example</h1>
+    <div id="output"></div>
+
+    <div class="form-group">
+        <input type="text" id="license" placeholder="Введите лицензионный ключ" required>
+        <button onclick="login()">Войти</button>
+    </div>
+
+    <div id="chat">
+        <h2>Чат "Test"</h2>
+        <div id="messages"></div>
+        <input type="text" id="messageInput" placeholder="Введите сообщение" />
+        <button onclick="sendMessage()">Отправить</button>
+    </div>
+
+    <script>
+        const KeyAuthApp = {
+            name: "ENH Site",
+            ownerId: "Y2MUphthuF",
+            secret: "3542d50cf4d26c5af0d7da784806762f280173943ef0f027fc135ffeaa7b1795",
+            version: "1.0",
+            url: "https://keyauth.ru/api/1.1/",
+            sessionid: null,
+            user_data: null,
+            app_data: null,
+            response: null,
+            channel: "test"
+        };
+
+        async function makeRequest(data) {
+            try {
+                const response = await axios.post(KeyAuthApp.url, new URLSearchParams(data));
+                return response.data;
+            } catch (error) {
+                console.error("Ошибка запроса:", error);
+                return { success: false, message: "Ошибка сети" };
+            }
+        }
+
+        async function initialize() {
+            const postData = {
+                type: 'init',
+                ver: KeyAuthApp.version,
+                name: KeyAuthApp.name,
+                ownerid: KeyAuthApp.ownerId
+            };
+            const jsonResponse = await makeRequest(postData);
+            if (!jsonResponse.success) {
+                alert('Ошибка инициализации: ' + jsonResponse.message);
+            } else {
+                KeyAuthApp.sessionid = jsonResponse.sessionid;
+                KeyAuthApp.app_data = jsonResponse.appinfo;
+                displayAppInfo();
+            }
+        }
+
+        function displayAppInfo() {
+            const output = document.getElementById('output');
+            output.innerHTML = `
+                <h2>Данные приложения:</h2>
+                <p>Количество пользователей: ${KeyAuthApp.app_data.numUsers}</p>
+                <p>Количество онлайн-пользователей: ${KeyAuthApp.app_data.numOnlineUsers}</p>
+            `;
+        }
+
+        async function login() {
+            const license = document.getElementById('license').value;
+            const postData = {
+                type: 'license',
+                key: license,
+                hwid: await getHardwareId(),
+                sessionid: KeyAuthApp.sessionid,
+                name: KeyAuthApp.name,
+                ownerid: KeyAuthApp.ownerId
+            };
+            const jsonResponse = await makeRequest(postData);
+            KeyAuthApp.response = jsonResponse;
+            handleResponse(jsonResponse);
+        }
+
+        function handleResponse(response) {
+            if (response.success) {
+                alert(response.message);
+                KeyAuthApp.user_data = response.info;
+                openChat();
+            } else {
+                alert('Ошибка: ' + response.message);
+            }
+        }
+
+        function openChat() {
+            document.getElementById('output').innerHTML = '';
+            document.getElementById('chat').style.display = 'block';
+            loadMessages(); // Первоначальная загрузка сообщений
+            setInterval(loadMessages, 1000); // Обновление сообщений каждые 15 секунд
+        }
+
+        async function loadMessages() {
+            const postData = {
+                type: 'chatget',
+                channel: KeyAuthApp.channel,
+                sessionid: KeyAuthApp.sessionid,
+                name: KeyAuthApp.name,
+                ownerid: KeyAuthApp.ownerId
+            };
+            const jsonResponse = await makeRequest(postData);
+            console.log('Сообщения:', jsonResponse); // Проверяем, что возвращает сервер
+            if (jsonResponse.success) {
+                displayMessages(jsonResponse.messages);
+            } else {
+                console.error('Ошибка загрузки сообщений: ' + jsonResponse.message);
+            }
+        }
+
+        function displayMessages(messages) {
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML = '';
+            for (const msg of messages) {
+                const time = new Date(msg.timestamp * 1000).toLocaleString(); // Преобразуем timestamp
+                messagesDiv.innerHTML += `
+                    <p>[${time}] <strong>${msg.author}</strong>: <span style="font-weight: normal;">${msg.message}</span></p>
+                `;
+            }
+            messagesDiv.scrollTop = messagesDiv.scrollHeight; // Прокрутка вниз
+        }
+
+        async function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value;
+            if (message) {
+                const postData = {
+                    type: 'chatsend',
+                    message: message,
+                    channel: KeyAuthApp.channel,
+                    sessionid: KeyAuthApp.sessionid,
+                    name: KeyAuthApp.name,
+                    ownerid: KeyAuthApp.ownerId
+                };
+                const jsonResponse = await makeRequest(postData);
+                if (jsonResponse.success) {
+                    messageInput.value = ''; // Очистка поля ввода
+                    loadMessages(); // Обновить сообщения
+                } else {
+                    alert('Ошибка отправки сообщения: ' + jsonResponse.message);
+                }
+            }
+        }
+
+        async function getHardwareId() {
+            try {
+                const response = await axios.get('https://api.ipify.org?format=json');
+                return response.data.ip; // Возвращаем IP-адрес
+            } catch (error) {
+                console.error('Ошибка получения IP-адреса:', error);
+                return 'unknown-ip'; // Возвращаем значение по умолчанию в случае ошибки
+            }
+        }
+
+        initialize();
+    </script>
+</body>
+</html>
