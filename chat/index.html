@@ -25,13 +25,13 @@
         }
 
         h2 {
-            text-shadow: 0 0 3px #ffffff, 0 0 7px #ffffff, 0 0 13px #ffffff;
-            margin-bottom: 10px;
+            text-shadow: 0 0 2px #ffffff, 0 0 5px #ffffff, 0 0 10px #ffffff;
+            margin-bottom: 8px;
         }
 
         h3 {
-            text-shadow: 0 0 3px #ffffff, 0 0 7px #ffffff, 0 0 13px #ffffff;
-            margin-bottom: 10px;
+            text-shadow: 0 0 2px #ffffff, 0 0 5px #ffffff, 0 0 10px #ffffff;
+            margin-bottom: 7px;
         }
         
         .form-group {
@@ -161,9 +161,9 @@
         function displayAppInfo() {
             const output = document.getElementById('output');
             output.innerHTML = `
-                <h2>Данные приложения:</h2>
-                <p>Total users: ${KeyAuthApp.app_data.numUsers}</p>
-                <p>Online users: ${KeyAuthApp.app_data.numOnlineUsers}</p>
+                <h2>Server data</h2>
+                <h3><p>Total users: ${KeyAuthApp.app_data.numUsers}</p></h3>
+                <h3><p>Online users: ${KeyAuthApp.app_data.numOnlineUsers}</p></h3>
             `;
         }
 
