@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KeyAuth Chat Example</title>
+    <title>ExNightHook chat</title>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
         body {
@@ -92,19 +92,19 @@
 </head>
 <body>
     <div class="loader"></div>
-    <h1>KeyAuth Chat Example</h1>
+    <h1>Test chat</h1>
     <div id="output"></div>
 
     <div class="form-group">
         <input type="text" id="license" placeholder="Введите лицензионный ключ" required>
-        <button onclick="login()">Войти</button>
+        <button onclick="login()">Login</button>
     </div>
 
     <div id="chat">
         <h2>Чат "Test"</h2>
         <div id="messages"></div>
         <input type="text" id="messageInput" placeholder="Введите сообщение" />
-        <button onclick="sendMessage()">Отправить</button>
+        <button onclick="sendMessage()">Send</button>
     </div>
 
     <script>
@@ -202,7 +202,7 @@
             if (jsonResponse.success) {
                 displayMessages(jsonResponse.messages);
             } else {
-                console.error('Ошибка загрузки сообщений: ' + jsonResponse.message);
+                console.error('Error loading messages: ' + jsonResponse.message);
             }
         }
 
@@ -235,7 +235,7 @@
                     messageInput.value = ''; // Очистка поля ввода
                     loadMessages(); // Обновить сообщения
                 } else {
-                    alert('Ошибка отправки сообщения: ' + jsonResponse.message);
+                    alert('Error send message: ' + jsonResponse.message);
                 }
             }
         }
@@ -245,8 +245,8 @@
                 const response = await axios.get('https://api.ipify.org?format=json');
                 return response.data.ip; // Возвращаем IP-адрес
             } catch (error) {
-                console.error('Ошибка получения IP-адреса:', error);
-                return 'unknown-ip'; // Возвращаем значение по умолчанию в случае ошибки
+                console.error('Error get data:', error);
+                return 'unknown'; // Возвращаем значение по умолчанию в случае ошибки
             }
         }
 
