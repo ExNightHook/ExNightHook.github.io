@@ -220,14 +220,28 @@
             const messagesDiv = document.getElementById('messages');
             messagesDiv.innerHTML = '';
             for (const msg of messages) {
-                const time = new Date(msg.timestamp * 1000).toLocaleString(); // Преобразуем timestamp
+                const time = new Date(msg.timestamp * 1000).toLocaleString();
+                const messageContent = formatMessage(msg.message);
                 messagesDiv.innerHTML += `
-                    <p>[${time}] <strong>${msg.author}</strong>: <span style="font-weight: normal;">${msg.message}</span></p>
+                    <p>[${time}] <strong>${msg.author}</strong>: ${messageContent}</p>
                 `;
             }
-            messagesDiv.scrollTop = messagesDiv.scrollHeight; // Прокрутка вниз
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
 
+        function formatMessage(message) {
+            const imgurLinkRegex = /https:\/\/imgur\.com\/([a-zA-Z0-9]+)/;
+            const match = message.match(imgurLinkRegex);
+            if (match) {
+                const imageId = match[1];
+                const imageUrl = `https://i.imgur.com/${imageId}.png`;
+                return `
+                    <img src="${imageUrl}" alt="Image from Imgur" />
+                    ${message.replace(imgurLinkRegex, '')} 
+                `;
+            }
+            return message; // Если нет ссылки, возвращаем сообщение как есть
+        }
         async function sendMessage() {
             const messageInput = document.getElementById('messageInput');
             const message = messageInput.value;
