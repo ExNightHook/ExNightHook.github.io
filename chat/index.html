@@ -5,103 +5,129 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ExNightHook chat</title>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: url('https://raw.githubusercontent.com/ExNightHook/ExNightHook.github.io/main/01.gif') no-repeat center center fixed;
-            background-size: cover;
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            color: white;
-        }
+    <style>body {
+    font-family: Arial, sans-serif;
+    background: url('https://raw.githubusercontent.com/ExNightHook/ExNightHook.github.io/main/01.gif') no-repeat center center fixed;
+    background-size: cover;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: white;
+}
 
-        h1 {
-            text-shadow: 0 0 3px #ffffff, 0 0 7px #ffffff, 0 0 13px #ffffff;
-            margin-bottom: 20px;
-        }
+h1 {
+    text-shadow: 0 0 3px #ffffff, 0 0 7px #ffffff, 0 0 13px #ffffff;
+    margin-bottom: 20px;
+}
 
-        h2 {
-            text-shadow: 0 0 2px #ffffff, 0 0 5px #ffffff, 0 0 10px #ffffff;
-            margin-bottom: 8px;
-        }
+h2, h3 {
+    text-shadow: 0 0 2px #ffffff, 0 0 5px #ffffff, 0 0 10px #ffffff;
+    margin-bottom: 8px;
+}
 
-        h3 {
-            text-shadow: 0 0 2px #ffffff, 0 0 5px #ffffff, 0 0 10px #ffffff;
-            margin-bottom: 7px;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-            text-align: center;
-        }
+.form-group {
+    display: flex; /* Используем флекс для горизонтального расположения */
+    margin-bottom: 15px;
+}
 
-        #chat {
-            display: none;
-            margin-top: 2px;
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-        }
+#chat {
+    display: none;
+    margin-top: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    width: 80%; /* Увеличиваем ширину */
+    max-width: 800px; /* Максимальная ширина для больших экранов */
+}
 
-        #messages {
-            border: 1px solid #ccc;
-            padding: 6px;
-            width: 100%;
-            height: 100%;
-            overflow-y: scroll;
-            margin-bottom: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-        }
+#messages {
+    margin-top: 10px; /* Уменьшите значение, чтобы поднять вверх */
+    margin-left: -10px; /* Смещение влево */
+    border: 1px solid #ccc;
+    padding: 12px; /* Увеличиваем внутренние отступы */
+    width: 100%;
+    height: 480px; /* Высота для мобильных устройств */
+    overflow-y: scroll;
+    margin-bottom: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    transition: scroll-behavior 0.3s; /* Плавная прокрутка */
+}
 
-        input[type="text"] {
-            padding: 10px;
-            border-radius: 5px;
-            border: none;
-            margin: 5px;
-        }
 
-        button {
-            padding: 10px 15px;
-            border-radius: 20px;
-            border: 2px solid #fff;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.3s;
-        }
+input[type="text"] {
+    padding: 15px; /* Увеличиваем внутренние отступы */
+    border-radius: 5px;
+    border: none;
+    flex: 1; /* Поле ввода занимает все доступное пространство */
+    margin-right: 10px; /* Отступ справа для кнопки */
+}
 
-        button:hover {
-            background: rgba(255, 255, 255, 0.4);
-            transform: scale(1.05);
-        }
+button {
+    padding: 10px 20px; /* Увеличиваем отступы кнопки */
+    border-radius: 20px;
+    border: 2px solid #fff;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
 
-        .loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 999;
-            animation: fadeOut 2s forwards;
-        }
-        
-        img {
-            max-width: 200px;
-            max-height: 200px;
-            width: auto;
-            height: auto;
-        }
-        
+button:hover {
+    background: rgba(255, 255, 255, 0.4);
+    transform: scale(1.05);
+}
+
+.loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    animation: fadeOut 2s forwards;
+}
+
+@media (min-width: 768px) {
+    /* Для экранов шире 768px */
+    #messages {
+        height: 500px; /* Увеличиваем высоту */
+    }
+
+    input[type="text"] {
+        width: 80%; /* Увеличиваем ширину поля ввода */
+    }
+
+    button {
+        padding: 10px 30px; /* Увеличиваем отступы кнопки на больших экранах */
+    }
+}
+
+@media (max-width: 767px) {
+    /* Для экранов меньше 768px (мобильные устройства) */
+    #messages {
+        height: 480px; /* Увеличиваем высоту для мобильных устройств */
+    }
+}
+
+
+img {
+    max-width: 200px;
+    max-height: 200px;
+    width: auto;
+    height: auto;
+}
+
+
+
         @keyframes fadeOut {
             0% { opacity: 1; }
             100% { opacity: 0; visibility: hidden; }
@@ -122,6 +148,8 @@
         <input type="text" id="messageInput" placeholder="Enter message" />
         <button onclick="sendMessage()">Send</button>
     </div>
+
+    <audio id="notificationSound" src="https://exnighthook.github.io/chat/notification.mp3"></audio>
 
     <script>
         const KeyAuthApp = {
@@ -201,10 +229,9 @@
         function openChat() {
             const elementsToHide = document.querySelectorAll('.form-group, #output');
             elementsToHide.forEach(element => element.style.display = 'none');
-            // Показываем окно чата
             document.getElementById('chat').style.display = 'block';
-            loadMessages(); // Первоначальная загрузка сообщений
-            setInterval(loadMessages, 1000); // Обновление сообщений каждые 15 секунд
+            loadMessages();
+            setInterval(loadMessages, 1000);
         }
 
         async function loadMessages() {
@@ -216,26 +243,61 @@
                 ownerid: KeyAuthApp.ownerId
             };
             const jsonResponse = await makeRequest(postData);
-            console.log('Сообщения:', jsonResponse); // Проверяем, что возвращает сервер
+            console.log('Сообщения:', jsonResponse);
             if (jsonResponse.success) {
+                checkForNewMessages(jsonResponse.messages);
                 displayMessages(jsonResponse.messages);
             } else {
                 console.error('Error loading messages: ' + jsonResponse.message);
             }
         }
 
-        function displayMessages(messages) {
-            const messagesDiv = document.getElementById('messages');
-            messagesDiv.innerHTML = '';
-            for (const msg of messages) {
-                const time = new Date(msg.timestamp * 1000).toLocaleString();
-                const messageContent = formatMessage(msg.message);
-                messagesDiv.innerHTML += `
-                    <p>[${time}] <strong>${msg.author}</strong>: ${messageContent}</p>
-                `;
-            }
-            //messagesDiv.scrollTop = messagesDiv.scrollHeight;
+function checkForNewMessages(messages) {
+    const currentTime = Math.floor(Date.now() / 1000); // Текущее время в секундах
+
+    for (const message of messages) {
+        // Проверяем, если сообщение не от меня и его время в пределах ±5 секунд от текущего времени
+        if (
+            message.author !== KeyAuthApp.user_data.username &&
+            (Math.abs(currentTime - message.timestamp) <= 3)
+        ) {
+            const notificationSound = document.getElementById('notificationSound');
+            notificationSound.currentTime = 0; // Ставим на начало
+            notificationSound.play(); // Воспроизводим звук
+            break; // Выходим после первого воспроизведения
         }
+    }
+}
+
+
+
+function displayMessages(messages) {
+    const messagesDiv = document.getElementById('messages');
+    messagesDiv.innerHTML = ''; // Очищаем текущее содержимое
+
+    for (const msg of messages) {
+        const time = new Date(msg.timestamp * 1000).toLocaleString();
+        const messageContent = formatMessage(msg.message);
+
+        // Создаем отдельный блок для каждого сообщения
+        const messageBlock = document.createElement('div');
+        messageBlock.style.marginBottom = '10px'; // Отступ между сообщениями
+        messageBlock.style.padding = '10px'; // Внутренние отступы
+        messageBlock.style.borderRadius = '10px'; // Закругленные углы
+        messageBlock.style.backgroundColor = msg.author === KeyAuthApp.user_data.username ? 'rgba(0, 0, 255, 0.1)' : 'rgba(255, 255, 255, 0.1)'; // Цвет фона
+
+        messageBlock.innerHTML = `
+            <strong>${msg.author}:</strong> ${messageContent}
+            <p style="margin: 0; text-align: right; font-size: 0.8em; color: gray;">${time}</p>
+        `;
+
+        messagesDiv.appendChild(messageBlock); // Добавляем новый блок в контейнер сообщений
+    }
+
+    // Прокрутка вниз к последнему сообщению
+    //messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
 
         function formatMessage(message) {
             const imgurLinkRegex = /https:\/\/imgur\.com\/([a-zA-Z0-9]+)/;
@@ -250,6 +312,7 @@
             }
             return message; // Если нет ссылки, возвращаем сообщение как есть
         }
+
         async function sendMessage() {
             const messageInput = document.getElementById('messageInput');
             const message = messageInput.value;
@@ -266,6 +329,7 @@
                 if (jsonResponse.success) {
                     messageInput.value = ''; // Очистка поля ввода
                     loadMessages(); // Обновить сообщения
+                    messagesDiv.appendChild(messageBlock);
                 } else {
                     alert('Error send message: ' + jsonResponse.message);
                 }
@@ -275,10 +339,10 @@
         async function getHardwareId() {
             try {
                 const response = await axios.get('https://api.ipify.org?format=json');
-                return response.data.ip; // Возвращаем IP-адрес
+                return response.data.ip;
             } catch (error) {
                 console.error('Error get data:', error);
-                return 'unknown'; // Возвращаем значение по умолчанию в случае ошибки
+                return 'unknown';
             }
         }
 
