@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Authorization</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <script>
+        const KeyAuthApp = {
+            name: "ENH Site",
+            ownerId: "Y2MUphthuF",
+            version: "1.0",
+            url: "https://keyauth.ru/api/1.1/",
+            sessionid: null,
+        };
+
+        async function makeRequest(data) {
+            try {
+                const response = await axios.post(KeyAuthApp.url, new URLSearchParams(data));
+                return response.data;
+            } catch (error) {
+                return { success: false, message: "Ошибка сети" };
+            }
+        }
+
+        async function initialize() {
+            const postData = {
+                type: 'init',
+                ver: KeyAuthApp.version,
+                name: KeyAuthApp.name,
+                ownerid: KeyAuthApp.ownerId
+            };
+            const jsonResponse = await makeRequest(postData);
+            KeyAuthApp.sessionid = jsonResponse.sessionid;
+        }
+
+        async function handleRequest(request) {
+            const licenseKey = request.body.key;
+            const postData = {
+                type: 'license',
+                key: licenseKey,
+                sessionid: KeyAuthApp.sessionid,
+                name: KeyAuthApp.name,
+                ownerid: KeyAuthApp.ownerId
+            };
+            const jsonResponse = await makeRequest(postData);
+            return jsonResponse;
+        }
+
+        // Инициализация
+        initialize().then(() => {
+            // Обработка POST-запросов
+            const urlParams = new URLSearchParams(window.location.search);
+            const licenseKey = urlParams.get("key");
+            if (licenseKey) {
+                handleRequest({ body: { key: licenseKey } }).then(response => {
+                    document.body.innerHTML = JSON.stringify(response);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
