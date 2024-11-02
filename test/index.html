@@ -50,11 +50,12 @@
 
         // Инициализация
         initialize().then(() => {
-            // Обработка POST-запросов
             const urlParams = new URLSearchParams(window.location.search);
             const licenseKey = urlParams.get("key");
             if (licenseKey) {
                 handleRequest({ body: { key: licenseKey } }).then(response => {
+                    // Установите заголовок Content-Type на application/json
+                    document.setHeader('Content-Type', 'application/json');
                     document.body.innerHTML = JSON.stringify(response);
                 });
             }
