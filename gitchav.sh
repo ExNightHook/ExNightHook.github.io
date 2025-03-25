@@ -2,7 +2,7 @@
 
 # Проверка запуска от правильного пользователя
 if [ "$(whoami)" != "chavesse" ]; then
-    echo "Ошибка: Скрипт должен быть запущен от пользователя chavesse"
+    echo "Error: Script must be loaded on user - chavesse"
     exit 1
 fi
 
