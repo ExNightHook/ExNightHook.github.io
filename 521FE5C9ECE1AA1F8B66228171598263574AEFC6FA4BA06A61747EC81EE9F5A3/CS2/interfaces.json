@@ -1,0 +1,5 @@
+{
+  "CCSGOInput": "E8 ? ? ? ? 48 8B 56 ? 48 8B C8 E8 ? ? ? ? 4C 89 7E",
+  "CGameTraceManager": "48 8B 0D ? ? ? ? 4C 8B C3 66 89 44 24",
+  "CreateMaterial": "48 89 5C 24 ? 48 89 6C 24 ? 56 57 41 56 48 81 EC ? ? ? ? 48 8B 05"
+}
