@@ -1,0 +1,8 @@
+{
+  "CCSGOInput": "E8 ? ? ? ? 48 8B 56 ? 48 8B C8 E8 ? ? ? ? 4C 89 7E",
+  "CGameTraceManager": "48 8B 0D ? ? ? ? 4C 8B C3 66 89 44 24",
+  "CGameTraceManager->TraceShape": "48 89 5C 24 20 48 89 4C 24 08 55 56 41",
+  "CGameTraceManager->ClipRayToEntity": "48 89 5C 24 ? 48 89 6C ? ? 48 89 74 24 18 48 89 7C 24 20 41 54 41 56 41 57 48 81 EC C0 ? ? ? 48 8B 9C",
+  "GameTrace_t->GetSurfaceData": "E8 ? ? ? ? 48 85 C0 74 ? 44 38 60",
+  "CreateMaterial": "48 89 5C 24 ? 48 89 6C 24 ? 56 57 41 56 48 81 EC ? ? ? ? 48 8B 05"
+}
