@@ -9,12 +9,13 @@ ADMIN_EMAIL="admin@example.com"
 PROJECT_NAME="vless_panel"
 APP_NAME="panel"
 PYTHON_VENV_PATH="/opt/vless_panel_venv"
+# Полные пути
+PROJECT_DIR="$PYTHON_VENV_PATH/$PROJECT_NAME" # /opt/vless_panel_venv/vless_panel
+APP_DIR="$PROJECT_DIR/$APP_NAME"             # /opt/vless_panel_venv/vless_panel/panel
 XRAY_CONFIG_GENERATOR="/opt/generate_xray_config.py"
 DJANGO_SERVICE_FILE="/etc/systemd/system/django_vless_panel.service"
 NGINX_CONFIG_FILE="/etc/nginx/sites-available/vless_panel"
 XRAY_UPDATE_SCRIPT="/opt/update_xray_from_db.sh"
-PROJECT_DIR="$PYTHON_VENV_PATH/$PROJECT_NAME" # Полный путь к проекту Django
-APP_DIR="$PROJECT_DIR/$APP_NAME"              # Полный путь к приложению Django
 # --- Конец Настроек ---
 
 # Получение внешнего IP-адреса сервера
@@ -44,7 +45,8 @@ source "$PYTHON_VENV_PATH/bin/activate"
 # 5. Установка Django и psycopg2 (для PostgreSQL) в виртуальное окружение
 pip install django psycopg2-binary
 
-# 6. Создание Django-проекта и приложения
+# 6. Создание Django-проекта в директории виртуального окружения
+# django-admin startproject PROJECT_NAME DESTINATION_DIR
 django-admin startproject "$PROJECT_NAME" "$PYTHON_VENV_PATH"
 
 # Проверка, успешно ли создан проект
@@ -53,7 +55,10 @@ if [ ! -d "$PROJECT_DIR" ]; then
     exit 1
 fi
 
+# Переходим в директорию проекта
 cd "$PROJECT_DIR"
+
+# 6.1. Создание Django-приложения внутри директории проекта
 python manage.py startapp "$APP_NAME"
 
 # Проверка, успешно ли создано приложение
@@ -62,7 +67,7 @@ if [ ! -d "$APP_DIR" ]; then
     exit 1
 fi
 
-# 7. Настройка settings.py для Django
+# 7. Настройка settings.py для Django (полный путь к файлу)
 cat << EOF > "$PROJECT_DIR/settings.py"
 import os
 from pathlib import Path
@@ -150,7 +155,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 EOF
 
-# 8. Создание модели VlessKey в models.py
+# 8. Создание модели VlessKey в models.py (полный путь к файлу)
 cat << 'EOF' > "$APP_DIR/models.py"
 from django.db import models
 import uuid
@@ -165,7 +170,7 @@ class VlessKey(models.Model):
         return f"VLESS Key {self.uuid[:8]}... (Expires: {self.valid_until})"
 EOF
 
-# 9. Создание admin.py для управления ключами в админке
+# 9. Создание admin.py для управления ключами в админке (полный путь к файлу)
 cat << 'EOF' > "$APP_DIR/admin.py"
 from django.contrib import admin
 from .models import VlessKey
@@ -260,7 +265,7 @@ EOF
 chmod +x "$XRAY_CONFIG_GENERATOR"
 
 # 12. Установка зависимостей Django (makemigrations, migrate, createsuperuser)
-# Переходим в директорию проекта
+# Переходим в директорию проекта (уже должны быть там из шага 6, но на всякий случай)
 cd "$PROJECT_DIR"
 
 # makemigrations
@@ -292,7 +297,7 @@ echo "Django успешно настроена и суперпользовате
 # 13. Настройка PostgreSQL
 DB_USER="vless_panel_user"
 DB_NAME="vless_panel_db"
-# Извлекаем случайный пароль из settings.py
+# Извлекаем случайный пароль из settings.py (теперь путь корректен)
 DB_PASSWORD=$(grep "PASSWORD" "$PROJECT_DIR/settings.py" | grep -o "'[^']*'" | sed -n 2p | sed "s/'//g")
 
 # Переключаемся на пользователя postgres и создаем БД и пользователя
