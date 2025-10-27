@@ -8,9 +8,7 @@ ADMIN_EMAIL="admin@example.com"
 PROJECT_NAME="vless_panel"
 APP_NAME="panel"
 PYTHON_VENV_PATH="/opt/vless_panel_venv"
-# PROJECT_DIR теперь указывает на директорию с manage.py
 PROJECT_DIR="$PYTHON_VENV_PATH/$PROJECT_NAME"
-# APP_DIR указывает на директорию приложения panel
 APP_DIR="$PROJECT_DIR/$APP_NAME"
 XRAY_CONFIG_FILE="/usr/local/etc/xray/config.json"
 XRAY_CONFIG_GENERATOR="/opt/generate_xray_config.py"
@@ -91,34 +89,31 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# 5. Создание Django-проекта и приложения
+# 5. Создание Django-проекта и приложения с правильной структурой
 echo "Создание Django-проекта и приложения..."
-# Переходим в директорию виртуального окружения
-cd "$PYTHON_VENV_PATH"
-# Создаем проект в текущей директории (.)
-django-admin startproject "$PROJECT_NAME" .
+
+# Создаем основную директорию проекта
+mkdir -p "$PROJECT_DIR"
+cd "$PROJECT_DIR"
+
+# Создаем Django проект в текущей директории
+"$PYTHON_VENV_PATH/bin/django-admin" startproject "$PROJECT_NAME" .
 if [ $? -ne 0 ]; then
     echo "Ошибка при создании Django-проекта. Выход."
     exit 1
 fi
-# Теперь структура: /opt/vless_panel_venv/manage.py и /opt/vless_panel_venv/vless_panel/
 
 # Создаем приложение
-python manage.py startapp "$APP_NAME"
+"$PYTHON_VENV_PATH/bin/python" manage.py startapp "$APP_NAME"
 if [ $? -ne 0 ]; then
     echo "Ошибка при создании Django-приложения. Выход."
     exit 1
 fi
-# Теперь структура: /opt/vless_panel_venv/manage.py, /opt/vless_panel_venv/vless_panel/, /opt/vless_panel_venv/panel/
 
-# Перемещаем внутреннюю директорию проекта внутрь самой себя
-mv "$PROJECT_NAME" "$PROJECT_NAME/$PROJECT_NAME"
-# Теперь структура: /opt/vless_panel_venv/manage.py, /opt/vless_panel_venv/vless_panel/vless_panel/
-# и manage.py нужно переместить внутрь /opt/vless_panel_venv/vless_panel/
-mv manage.py "$PROJECT_NAME/"
-
-# 6. Настройка settings.py (теперь путь к settings.py правильный: /opt/vless_panel_venv/vless_panel/vless_panel/settings.py)
+# 6. Настройка settings.py
 echo "Настройка Django settings.py..."
+DB_PASSWORD=$(openssl rand -hex 16)
+
 cat << EOF > "$PROJECT_DIR/$PROJECT_NAME/settings.py"
 import os
 from pathlib import Path
@@ -127,7 +122,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = '$(openssl rand -hex 32)'
 DEBUG = False
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['$SERVER_IP', 'localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -154,7 +149,7 @@ ROOT_URLCONF = '$PROJECT_NAME.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -174,7 +169,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'vless_panel_db',
         'USER': 'vless_panel_user',
-        'PASSWORD': '$(openssl rand -hex 16)',
+        'PASSWORD': '$DB_PASSWORD',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -205,6 +200,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 EOF
+
 if [ $? -ne 0 ]; then
     echo "Ошибка при записи settings.py. Выход."
     exit 1
@@ -225,6 +221,7 @@ class VlessKey(models.Model):
     def __str__(self):
         return f"VLESS Key {self.uuid[:8]}... (Expires: {self.valid_until})"
 EOF
+
 if [ $? -ne 0 ]; then
     echo "Ошибка при записи models.py. Выход."
     exit 1
@@ -252,12 +249,56 @@ class VlessKeyAdmin(admin.ModelAdmin):
             obj.uuid = str(uuid.uuid4())
         super().save_model(request, obj, form, change)
 EOF
+
 if [ $? -ne 0 ]; then
     echo "Ошибка при записи admin.py. Выход."
     exit 1
 fi
 
-# 9. Создание скрипта генерации конфига Xray
+# 9. Настройка URLs
+echo "Настройка URLs..."
+cat << EOF > "$PROJECT_DIR/$PROJECT_NAME/urls.py"
+from django.contrib import admin
+from django.urls import path
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+]
+EOF
+
+# 10. Настройка PostgreSQL
+echo "Настройка PostgreSQL..."
+sudo -u postgres psql -c "CREATE USER vless_panel_user WITH PASSWORD '$DB_PASSWORD';" 2>/dev/null || true
+sudo -u postgres psql -c "CREATE DATABASE vless_panel_db OWNER vless_panel_user;" 2>/dev/null || true
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE vless_panel_db TO vless_panel_user;" 2>/dev/null || true
+
+# 11. Выполнение миграций и создание суперпользователя
+echo "Выполнение Django миграций и создание суперпользователя..."
+cd "$PROJECT_DIR"
+
+# Собираем статические файлы
+"$PYTHON_VENV_PATH/bin/python" manage.py collectstatic --noinput
+
+"$PYTHON_VENV_PATH/bin/python" manage.py makemigrations
+if [ $? -ne 0 ]; then
+    echo "Ошибка при выполнении makemigrations. Выход."
+    exit 1
+fi
+
+"$PYTHON_VENV_PATH/bin/python" manage.py migrate
+if [ $? -ne 0 ]; then
+    echo "Ошибка при выполнении migrate. Выход."
+    exit 1
+fi
+
+echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('$ADMIN_USERNAME', '$ADMIN_EMAIL', '$ADMIN_PASSWORD')" | "$PYTHON_VENV_PATH/bin/python" manage.py shell
+if [ $? -ne 0 ]; then
+    echo "Ошибка при создании суперпользователя. Выход."
+    exit 1
+fi
+echo "Django миграции и суперпользователь успешно созданы."
+
+# 12. Создание скрипта генерации конфига Xray
 echo "Создание скрипта генерации конфига Xray..."
 cat << 'EOF' > "$XRAY_CONFIG_GENERATOR"
 #!/usr/bin/env python3
@@ -265,8 +306,8 @@ import os
 import sys
 import django
 from datetime import datetime
-from django.conf import settings
 
+# Добавляем путь к проекту Django
 sys.path.append('/opt/vless_panel_venv/vless_panel')
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'vless_panel.settings')
 
@@ -290,112 +331,82 @@ xray_config = {
     "inbounds": [{
         "port": 443,
         "protocol": "vless",
-        "settings": {"decryption": "none", "clients": clients},
-        "streamSettings": {"network": "tcp", "security": "none"}
+        "settings": {
+            "clients": clients,
+            "decryption": "none"
+        },
+        "streamSettings": {
+            "network": "tcp",
+            "security": "none"
+        }
     }],
-    "outbounds": [{"protocol": "freedom", "settings": {}}]
+    "outbounds": [{
+        "protocol": "freedom",
+        "settings": {}
+    }]
 }
 
 import json
 CONFIG_FILE_PATH = "/usr/local/etc/xray/config.json"
+
+# Создаем директорию если не существует
+os.makedirs(os.path.dirname(CONFIG_FILE_PATH), exist_ok=True)
 
 with open(CONFIG_FILE_PATH, 'w') as f:
     json.dump(xray_config, f, indent=2)
 
 print(f"Конфигурация Xray обновлена. Активные ключи: {len(clients)}")
 EOF
-if [ $? -ne 0 ]; then
-    echo "Ошибка при создании скрипта генерации конфига Xray. Выход."
-    exit 1
-fi
-chmod +x "$XRAY_UPDATE_SCRIPT" "$XRAY_CONFIG_GENERATOR"
 
-# 10. Выполнение миграций и создание суперпользователя
-echo "Выполнение Django миграций и создание суперпользователя..."
-cd "$PROJECT_DIR" # /opt/vless_panel_venv/vless_panel
-python manage.py makemigrations
-if [ $? -ne 0 ]; then
-    echo "Ошибка при выполнении makemigrations. Выход."
-    exit 1
-fi
-
-python manage.py migrate
-if [ $? -ne 0 ]; then
-    echo "Ошибка при выполнении migrate. Выход."
-    exit 1
-fi
-
-echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('$ADMIN_USERNAME', '$ADMIN_EMAIL', '$ADMIN_PASSWORD')" | python manage.py shell
-if [ $? -ne 0 ]; then
-    echo "Ошибка при создании суперпользователя. Выход."
-    exit 1
-fi
-echo "Django миграции и суперпользователь успешно созданы."
-
-# 11. Настройка PostgreSQL
-echo "Настройка PostgreSQL..."
-DB_USER="vless_panel_user"
-DB_NAME="vless_panel_db"
-DB_PASSWORD=$(grep "PASSWORD" "$PROJECT_DIR/$PROJECT_NAME/settings.py" | grep -o "'[^']*'" | sed -n 2p | sed "s/'//g")
-
-sudo -u postgres psql -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_user WHERE usename = '$DB_USER') THEN CREATE USER $DB_USER WITH PASSWORD '$DB_PASSWORD'; END IF; END \$\$;"
-sudo -u postgres psql -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_database WHERE datname = '$DB_NAME') THEN CREATE DATABASE $DB_NAME OWNER $DB_USER; END IF; END \$\$;"
-if [ $? -ne 0 ]; then
-    echo "Ошибка при настройке PostgreSQL. Выход."
-    exit 1
-fi
-
-# 12. Создание сервиса Django
-echo "Создание и настройка сервиса Django..."
-cat << EOF > "$DJANGO_SERVICE_FILE"
-[Unit]
-Description=Django VLESS Panel
-After=network.target
-
-[Service]
-Type=exec
-User=root
-WorkingDirectory=$PROJECT_DIR
-Environment=PATH=$PYTHON_VENV_PATH/bin
-ExecStart=$PYTHON_VENV_PATH/bin/python manage.py runserver 0.0.0.0:8000
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-EOF
-if [ $? -ne 0 ]; then
-    echo "Ошибка при создании файла сервиса Django. Выход."
-    exit 1
-fi
-
-systemctl daemon-reload
-systemctl enable django_vless_panel
-if [ $? -ne 0 ]; then
-    echo "Ошибка при включении сервиса Django. Выход."
-    exit 1
-fi
+chmod +x "$XRAY_CONFIG_GENERATOR"
 
 # 13. Создание скрипта обновления Xray и cron-задачи
 echo "Создание скрипта обновления Xray и cron-задачи..."
 cat << EOF > "$XRAY_UPDATE_SCRIPT"
 #!/bin/bash
 source $PYTHON_VENV_PATH/bin/activate
+cd $PROJECT_DIR
 python $XRAY_CONFIG_GENERATOR
 systemctl restart xray
 EOF
-if [ $? -ne 0 ]; then
-    echo "Ошибка при создании скрипта обновления Xray. Выход."
-    exit 1
-fi
+
 chmod +x "$XRAY_UPDATE_SCRIPT"
 
-(crontab -l 2>/dev/null; echo "* * * * * $XRAY_UPDATE_SCRIPT >> /var/log/xray_update.log 2>&1") | crontab -
-if [ $? -ne 0 ]; then
-    echo "Ошибка при добавлении cron-задачи. Выход."
-    exit 1
-fi
+# Создаем лог-файл и добавляем cron задачу
+touch /var/log/xray_update.log
+chmod 644 /var/log/xray_update.log
+(crontab -l 2>/dev/null | grep -v 'update_xray_from_db'; echo "* * * * * $XRAY_UPDATE_SCRIPT >> /var/log/xray_update.log 2>&1") | crontab -
 
-# 14. Настройка Nginx
+# 14. Создание сервиса Django
+echo "Создание и настройка сервиса Django..."
+cat << EOF > "$DJANGO_SERVICE_FILE"
+[Unit]
+Description=Django VLESS Panel
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=$PROJECT_DIR
+Environment=PATH=$PYTHON_VENV_PATH/bin
+Environment=PYTHONPATH=$PROJECT_DIR
+ExecStart=$PYTHON_VENV_PATH/bin/gunicorn --bind 0.0.0.0:8000 --workers 3 vless_panel.wsgi:application
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reload
+systemctl enable django_vless_panel
+
+# 15. Установка Gunicorn
+echo "Установка Gunicorn..."
+source "$PYTHON_VENV_PATH/bin/activate"
+pip install gunicorn
+
+# 16. Настройка Nginx
 echo "Настройка Nginx..."
 cat << EOF > "$NGINX_CONFIG_FILE"
 server {
@@ -407,17 +418,16 @@ server {
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
     }
 
     location /static/ {
         alias $PROJECT_DIR/staticfiles/;
+        expires 30d;
+        add_header Cache-Control "public, immutable";
     }
 }
 EOF
-if [ $? -ne 0 ]; then
-    echo "Ошибка при создании конфига Nginx. Выход."
-    exit 1
-fi
 
 ln -sf "$NGINX_CONFIG_FILE" /etc/nginx/sites-enabled/
 nginx -t
@@ -425,9 +435,8 @@ if [ $? -ne 0 ]; then
     echo "Ошибка в синтаксисе конфига Nginx. Выход."
     exit 1
 fi
-systemctl reload nginx
 
-# 15. Настройка брандмауэра
+# 17. Настройка брандмауэра
 echo "Настройка UFW..."
 if command -v ufw &> /dev/null; then
     ufw allow $PORT/tcp
@@ -436,16 +445,24 @@ if command -v ufw &> /dev/null; then
     ufw --force enable
 fi
 
-# 16. Запуск Xray и Django
-echo "Запуск Xray и Django сервиса..."
+# 18. Генерация начального конфига Xray и запуск сервисов
+echo "Генерация начального конфига Xray..."
+$XRAY_UPDATE_SCRIPT
+
+echo "Запуск сервисов..."
 systemctl enable xray
 systemctl restart xray
+systemctl restart nginx
 systemctl start django_vless_panel
 
-if [ $? -ne 0 ]; then
-    echo "Ошибка при запуске Xray или Django сервиса. Выход."
-    exit 1
-fi
+# Даем сервисам время на запуск
+sleep 5
+
+# Проверяем статусы сервисов
+echo "=== Статусы сервисов ==="
+echo "Xray: $(systemctl is-active xray)"
+echo "Nginx: $(systemctl is-active nginx)"
+echo "Django: $(systemctl is-active django_vless_panel)"
 
 echo "=== Установка завершена успешно! ==="
 echo "=== Настройки подключения VLESS ==="
@@ -460,4 +477,8 @@ echo "Адрес панели: http://$SERVER_IP/admin/"
 echo "Логин: $ADMIN_USERNAME"
 echo "Пароль: $ADMIN_PASSWORD"
 echo "=================================="
-echo "Лог обновления Xray: cat /var/log/xray_update.log"
+echo "Полезные команды:"
+echo "Просмотр логов Xray: journalctl -u xray -f"
+echo "Просмотр логов Django: journalctl -u django_vless_panel -f"
+echo "Просмотр логов обновления: tail -f /var/log/xray_update.log"
+echo "Перезапуск панели: systemctl restart django_vless_panel"
