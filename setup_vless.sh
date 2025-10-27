@@ -5,7 +5,14 @@
 PORT=443
 ADMIN_USERNAME="Aesthesia"
 ADMIN_PASSWORD="aN5oL2rZ4vrJ"
-ADMIN_EMAIL="admin@example.com" # Необязательно для суперпользователя, но Django требует
+ADMIN_EMAIL="admin@example.com"
+PROJECT_NAME="vless_panel"
+APP_NAME="panel"
+PYTHON_VENV_PATH="/opt/vless_panel_venv"
+XRAY_CONFIG_GENERATOR="/opt/generate_xray_config.py"
+DJANGO_SERVICE_FILE="/etc/systemd/system/django_vless_panel.service"
+NGINX_CONFIG_FILE="/etc/nginx/sites-available/vless_panel"
+XRAY_UPDATE_SCRIPT="/opt/update_xray_from_db.sh"
 # --- Конец Настроек ---
 
 # Получение внешнего IP-адреса сервера
@@ -29,7 +36,6 @@ if [ $? -ne 0 ]; then
 fi
 
 # 4. Создание виртуального окружения для Django
-PYTHON_VENV_PATH="/opt/vless_panel_venv"
 python3 -m venv "$PYTHON_VENV_PATH"
 source "$PYTHON_VENV_PATH/bin/activate"
 
@@ -37,10 +43,8 @@ source "$PYTHON_VENV_PATH/bin/activate"
 pip install django psycopg2-binary
 
 # 6. Создание Django-проекта и приложения
-PROJECT_NAME="vless_panel"
-APP_NAME="panel"
-django-admin startproject "$PROJECT_NAME"
-cd "$PROJECT_NAME"
+django-admin startproject "$PROJECT_NAME" "$PYTHON_VENV_PATH"
+cd "$PYTHON_VENV_PATH/$PROJECT_NAME"
 python manage.py startapp "$APP_NAME"
 
 # 7. Настройка settings.py для Django
@@ -159,9 +163,8 @@ class VlessKeyAdmin(admin.ModelAdmin):
     list_filter = ('valid_until',)
 
     def has_add_permission(self, request):
-        # Отключаем кнопку "Добавить" в админке, будем использовать кастомную логику или скрипты
-        # Или оставим, если админ будет добавлять вручную (см. ниже)
-        return True # Пока включим, можно добавлять вручную
+        # Включаем кнопку "Добавить"
+        return True
 
     def save_model(self, request, obj, form, change):
         # При сохранении вручную, если uuid пустой, генерируем
@@ -172,7 +175,6 @@ class VlessKeyAdmin(admin.ModelAdmin):
 EOF
 
 # 10. Создание скрипта для генерации конфига Xray на основе активных ключей
-XRAY_CONFIG_GENERATOR="/opt/generate_xray_config.py"
 cat << 'EOF' > "$XRAY_CONFIG_GENERATOR"
 #!/usr/bin/env python3
 import os
@@ -243,50 +245,36 @@ EOF
 chmod +x "$XRAY_CONFIG_GENERATOR"
 
 # 12. Установка зависимостей Django (makemigrations, migrate, createsuperuser)
-# Подготовка скрипта для выполнения команд Django
-cat << EOF > /tmp/django_setup.py
-import os
-import django
-from django.core.management import execute_from_command_line
-from django.contrib.auth import get_user_model
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', '$PROJECT_NAME.settings')
-django.setup()
+# Переходим в директорию проекта
+cd "$PYTHON_VENV_PATH/$PROJECT_NAME"
 
 # makemigrations
-execute_from_command_line(['manage.py', 'makemigrations'])
+python manage.py makemigrations
 
 # migrate
-execute_from_command_line(['manage.py', 'migrate'])
+python manage.py migrate
 
-# Создание суперпользователя
-User = get_user_model()
-if not User.objects.filter(username='$ADMIN_USERNAME').exists():
-    User.objects.create_superuser('$ADMIN_USERNAME', '$ADMIN_EMAIL', '$ADMIN_PASSWORD')
-    print(f'Суперпользователь $ADMIN_USERNAME создан.')
-else:
-    print(f'Суперпользователь $ADMIN_USERNAME уже существует.')
-EOF
-
-python /tmp/django_setup.py
+# Создание суперпользователя напрямую
+echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('$ADMIN_USERNAME', '$ADMIN_EMAIL', '$ADMIN_PASSWORD')" | python manage.py shell
 
 if [ $? -ne 0 ]; then
     echo "Ошибка при настройке Django (makemigrations/migrate/createsuperuser). Выход."
     exit 1
 fi
 
+echo "Django успешно настроена и суперпользователь создан."
+
 # 13. Настройка PostgreSQL
 DB_USER="vless_panel_user"
 DB_NAME="vless_panel_db"
-DB_PASSWORD=$(grep "PASSWORD" "$PROJECT_NAME/settings.py" | grep -o "'[^']*'" | sed -n 2p | sed "s/'//g") # Извлекаем случайный пароль из settings.py
+# Извлекаем случайный пароль из settings.py
+DB_PASSWORD=$(grep "PASSWORD" "$PROJECT_NAME/settings.py" | grep -o "'[^']*'" | sed -n 2p | sed "s/'//g")
 
 # Переключаемся на пользователя postgres и создаем БД и пользователя
-sudo -u postgres psql -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASSWORD';"
-sudo -u postgres psql -c "CREATE DATABASE $DB_NAME OWNER $DB_USER;"
-sudo -u postgres psql -c "ALTER USER $DB_USER CREATEDB;" # Для Django миграций
+sudo -u postgres psql -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_user WHERE usename = '$DB_USER') THEN CREATE USER $DB_USER WITH PASSWORD '$DB_PASSWORD'; END IF; END \$\$;"
+sudo -u postgres psql -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_database WHERE datname = '$DB_NAME') THEN CREATE DATABASE $DB_NAME OWNER $DB_USER; END IF; END \$\$;"
 
 # 14. Создание скрипта для запуска Django (для systemd)
-DJANGO_SERVICE_FILE="/etc/systemd/system/django_vless_panel.service"
 cat << EOF > "$DJANGO_SERVICE_FILE"
 [Unit]
 Description=Django VLESS Panel
@@ -295,9 +283,9 @@ After=network.target
 [Service]
 Type=exec
 User=root
-WorkingDirectory=/opt/vless_panel_venv/$PROJECT_NAME
-Environment=PATH=/opt/vless_panel_venv/bin
-ExecStart=/opt/vless_panel_venv/bin/python manage.py runserver 0.0.0.0:8000
+WorkingDirectory=$PYTHON_VENV_PATH/$PROJECT_NAME
+Environment=PATH=$PYTHON_VENV_PATH/bin
+ExecStart=$PYTHON_VENV_PATH/bin/python manage.py runserver 0.0.0.0:8000
 Restart=always
 
 [Install]
@@ -305,7 +293,6 @@ WantedBy=multi-user.target
 EOF
 
 # 15. Создание скрипта для обновления Xray (для cron)
-XRAY_UPDATE_SCRIPT="/opt/update_xray_from_db.sh"
 cat << EOF > "$XRAY_UPDATE_SCRIPT"
 #!/bin/bash
 # Активируем виртуальное окружение
@@ -330,8 +317,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# 18. Настройка Nginx (опционально, но рекомендуется для доступа к Django)
-NGINX_CONFIG_FILE="/etc/nginx/sites-available/vless_panel"
+# 18. Настройка Nginx
 cat << EOF > "$NGINX_CONFIG_FILE"
 server {
     listen 80;
@@ -345,7 +331,7 @@ server {
     }
 
     location /static/ {
-        alias /opt/vless_panel_venv/$PROJECT_NAME/staticfiles/;
+        alias $PYTHON_VENV_PATH/$PROJECT_NAME/staticfiles/;
     }
 }
 EOF
@@ -365,7 +351,7 @@ else
     echo "Брандмауэр ufw не найден. Убедитесь, что порты $PORT и 80 открыты вручную или провайдером VPS."
 fi
 
-# 20. Запуск и включение Xray (для начального запуска, конфиг будет пустой до первого обновления)
+# 20. Запуск и включение Xray
 systemctl enable xray
 systemctl restart xray
 
