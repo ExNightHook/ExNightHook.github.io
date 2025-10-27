@@ -8,10 +8,9 @@ ADMIN_EMAIL="admin@example.com"
 PROJECT_NAME="vless_panel"
 APP_NAME="panel"
 PYTHON_VENV_PATH="/opt/vless_panel_venv"
-# Исправленный путь: теперь PROJECT_DIR указывает на /opt/vless_panel_venv/PROJECT_NAME
-# и manage.py будет находиться в PROJECT_DIR/PROJECT_NAME/manage.py
+# PROJECT_DIR указывает на директорию, где будет находиться manage.py и settings.py
 PROJECT_DIR="$PYTHON_VENV_PATH/$PROJECT_NAME"
-APP_DIR="$PROJECT_DIR/$APP_NAME" # Это теперь /opt/vless_panel_venv/vless_panel/panel
+APP_DIR="$PROJECT_DIR/$APP_NAME" # /opt/vless_panel_venv/vless_panel/panel
 XRAY_CONFIG_FILE="/usr/local/etc/xray/config.json"
 XRAY_CONFIG_GENERATOR="/opt/generate_xray_config.py"
 DJANGO_SERVICE_FILE="/etc/systemd/system/django_vless_panel.service"
@@ -94,31 +93,31 @@ fi
 # 5. Создание Django-проекта и приложения
 echo "Создание Django-проекта и приложения..."
 # django-admin startproject PROJECT_NAME DESTINATION_DIR
-# Это создаст /opt/vless_panel_venv/vless_panel/vless_panel/manage.py
+# Создаст /opt/vless_panel_venv/vless_panel/
 django-admin startproject "$PROJECT_NAME" "$PYTHON_VENV_PATH"
 if [ $? -ne 0 ]; then
     echo "Ошибка при создании Django-проекта. Выход."
     exit 1
 fi
 
-# Переходим в директорию, где находится manage.py (внутри PROJECT_NAME)
-cd "$PROJECT_DIR/$PROJECT_NAME" # Теперь pwd = /opt/vless_panel_venv/vless_panel/vless_panel
+# Перейдем в директорию, где находится внутренняя папка проекта и manage.py
+cd "$PROJECT_DIR/$PROJECT_NAME" # /opt/vless_panel_venv/vless_panel/vless_panel
+# Создадим приложение
 python manage.py startapp "$APP_NAME"
 if [ $? -ne 0 ]; then
     echo "Ошибка при создании Django-приложения. Выход."
     exit 1
 fi
 
-# Теперь перемещаем приложение из /opt/vless_panel_venv/vless_panel/vless_panel/panel
-# в /opt/vless_panel_venv/vless_panel/panel, чтобы оно находилось рядом с venv
-mv "$PROJECT_DIR/$PROJECT_NAME/$APP_NAME" "$APP_DIR"
+# Переместим приложение на уровень выше, в PROJECT_DIR
+mv "$PROJECT_DIR/$PROJECT_NAME/$APP_NAME" "$PROJECT_DIR/"
 
-# Также перемещаем manage.py, settings.py, urls.py, wsgi.py, asgi.py в родительскую директорию
-mv "$PROJECT_DIR/$PROJECT_NAME/manage.py" "$PROJECT_DIR/"
-mv "$PROJECT_DIR/$PROJECT_NAME/$PROJECT_NAME"/* "$PROJECT_DIR/"
-rmdir "$PROJECT_DIR/$PROJECT_NAME" # Удаляем пустую поддиректорию
+# Теперь переместим manage.py и внутреннюю директорию проекта на уровень PROJECT_DIR
+mv manage.py "$PROJECT_DIR/"
+mv "$PROJECT_NAME"/* "$PROJECT_DIR/" # Переносим settings.py, urls.py, wsgi.py, asgi.py
+rmdir "$PROJECT_NAME" # Удаляем теперь пустую внутреннюю директорию
 
-# 6. Настройка settings.py (путь к settings.py теперь правильный)
+# 6. Настройка settings.py (теперь путь к settings.py правильный)
 echo "Настройка Django settings.py..."
 cat << EOF > "$PROJECT_DIR/$PROJECT_NAME/settings.py"
 import os
