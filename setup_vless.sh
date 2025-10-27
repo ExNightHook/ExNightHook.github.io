@@ -8,8 +8,10 @@ ADMIN_EMAIL="admin@example.com"
 PROJECT_NAME="vless_panel"
 APP_NAME="panel"
 PYTHON_VENV_PATH="/opt/vless_panel_venv"
+# Исправленный путь: теперь PROJECT_DIR указывает на /opt/vless_panel_venv/PROJECT_NAME
+# и manage.py будет находиться в PROJECT_DIR/PROJECT_NAME/manage.py
 PROJECT_DIR="$PYTHON_VENV_PATH/$PROJECT_NAME"
-APP_DIR="$PROJECT_DIR/$APP_NAME"
+APP_DIR="$PROJECT_DIR/$APP_NAME" # Это теперь /opt/vless_panel_venv/vless_panel/panel
 XRAY_CONFIG_FILE="/usr/local/etc/xray/config.json"
 XRAY_CONFIG_GENERATOR="/opt/generate_xray_config.py"
 DJANGO_SERVICE_FILE="/etc/systemd/system/django_vless_panel.service"
@@ -91,22 +93,34 @@ fi
 
 # 5. Создание Django-проекта и приложения
 echo "Создание Django-проекта и приложения..."
+# django-admin startproject PROJECT_NAME DESTINATION_DIR
+# Это создаст /opt/vless_panel_venv/vless_panel/vless_panel/manage.py
 django-admin startproject "$PROJECT_NAME" "$PYTHON_VENV_PATH"
 if [ $? -ne 0 ]; then
     echo "Ошибка при создании Django-проекта. Выход."
     exit 1
 fi
 
-cd "$PROJECT_DIR"
+# Переходим в директорию, где находится manage.py (внутри PROJECT_NAME)
+cd "$PROJECT_DIR/$PROJECT_NAME" # Теперь pwd = /opt/vless_panel_venv/vless_panel/vless_panel
 python manage.py startapp "$APP_NAME"
 if [ $? -ne 0 ]; then
     echo "Ошибка при создании Django-приложения. Выход."
     exit 1
 fi
 
-# 6. Настройка settings.py
+# Теперь перемещаем приложение из /opt/vless_panel_venv/vless_panel/vless_panel/panel
+# в /opt/vless_panel_venv/vless_panel/panel, чтобы оно находилось рядом с venv
+mv "$PROJECT_DIR/$PROJECT_NAME/$APP_NAME" "$APP_DIR"
+
+# Также перемещаем manage.py, settings.py, urls.py, wsgi.py, asgi.py в родительскую директорию
+mv "$PROJECT_DIR/$PROJECT_NAME/manage.py" "$PROJECT_DIR/"
+mv "$PROJECT_DIR/$PROJECT_NAME/$PROJECT_NAME"/* "$PROJECT_DIR/"
+rmdir "$PROJECT_DIR/$PROJECT_NAME" # Удаляем пустую поддиректорию
+
+# 6. Настройка settings.py (путь к settings.py теперь правильный)
 echo "Настройка Django settings.py..."
-cat << EOF > "$PROJECT_DIR/settings.py"
+cat << EOF > "$PROJECT_DIR/$PROJECT_NAME/settings.py"
 import os
 from pathlib import Path
 
@@ -299,7 +313,7 @@ chmod +x "$XRAY_UPDATE_SCRIPT" "$XRAY_CONFIG_GENERATOR"
 
 # 10. Выполнение миграций и создание суперпользователя
 echo "Выполнение Django миграций и создание суперпользователя..."
-cd "$PROJECT_DIR"
+cd "$PROJECT_DIR" # Убедимся, что мы в /opt/vless_panel_venv/vless_panel
 python manage.py makemigrations
 if [ $? -ne 0 ]; then
     echo "Ошибка при выполнении makemigrations. Выход."
@@ -323,7 +337,7 @@ echo "Django миграции и суперпользователь успешн
 echo "Настройка PostgreSQL..."
 DB_USER="vless_panel_user"
 DB_NAME="vless_panel_db"
-DB_PASSWORD=$(grep "PASSWORD" "$PROJECT_DIR/settings.py" | grep -o "'[^']*'" | sed -n 2p | sed "s/'//g")
+DB_PASSWORD=$(grep "PASSWORD" "$PROJECT_DIR/$PROJECT_NAME/settings.py" | grep -o "'[^']*'" | sed -n 2p | sed "s/'//g")
 
 sudo -u postgres psql -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_user WHERE usename = '$DB_USER') THEN CREATE USER $DB_USER WITH PASSWORD '$DB_PASSWORD'; END IF; END \$\$;"
 sudo -u postgres psql -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_database WHERE datname = '$DB_NAME') THEN CREATE DATABASE $DB_NAME OWNER $DB_USER; END IF; END \$\$;"
