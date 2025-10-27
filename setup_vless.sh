@@ -13,6 +13,8 @@ XRAY_CONFIG_GENERATOR="/opt/generate_xray_config.py"
 DJANGO_SERVICE_FILE="/etc/systemd/system/django_vless_panel.service"
 NGINX_CONFIG_FILE="/etc/nginx/sites-available/vless_panel"
 XRAY_UPDATE_SCRIPT="/opt/update_xray_from_db.sh"
+PROJECT_DIR="$PYTHON_VENV_PATH/$PROJECT_NAME" # Полный путь к проекту Django
+APP_DIR="$PROJECT_DIR/$APP_NAME"              # Полный путь к приложению Django
 # --- Конец Настроек ---
 
 # Получение внешнего IP-адреса сервера
@@ -44,11 +46,24 @@ pip install django psycopg2-binary
 
 # 6. Создание Django-проекта и приложения
 django-admin startproject "$PROJECT_NAME" "$PYTHON_VENV_PATH"
-cd "$PYTHON_VENV_PATH/$PROJECT_NAME"
+
+# Проверка, успешно ли создан проект
+if [ ! -d "$PROJECT_DIR" ]; then
+    echo "Ошибка при создании Django-проекта. Директория $PROJECT_DIR не существует."
+    exit 1
+fi
+
+cd "$PROJECT_DIR"
 python manage.py startapp "$APP_NAME"
 
+# Проверка, успешно ли создано приложение
+if [ ! -d "$APP_DIR" ]; then
+    echo "Ошибка при создании Django-приложения. Директория $APP_DIR не существует."
+    exit 1
+fi
+
 # 7. Настройка settings.py для Django
-cat << EOF > "$PROJECT_NAME/settings.py"
+cat << EOF > "$PROJECT_DIR/settings.py"
 import os
 from pathlib import Path
 
@@ -136,7 +151,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 EOF
 
 # 8. Создание модели VlessKey в models.py
-cat << 'EOF' > "$APP_NAME/models.py"
+cat << 'EOF' > "$APP_DIR/models.py"
 from django.db import models
 import uuid
 
@@ -151,7 +166,7 @@ class VlessKey(models.Model):
 EOF
 
 # 9. Создание admin.py для управления ключами в админке
-cat << 'EOF' > "$APP_NAME/admin.py"
+cat << 'EOF' > "$APP_DIR/admin.py"
 from django.contrib import admin
 from .models import VlessKey
 
@@ -246,19 +261,29 @@ chmod +x "$XRAY_CONFIG_GENERATOR"
 
 # 12. Установка зависимостей Django (makemigrations, migrate, createsuperuser)
 # Переходим в директорию проекта
-cd "$PYTHON_VENV_PATH/$PROJECT_NAME"
+cd "$PROJECT_DIR"
 
 # makemigrations
 python manage.py makemigrations
 
+if [ $? -ne 0 ]; then
+    echo "Ошибка при выполнении makemigrations."
+    exit 1
+fi
+
 # migrate
 python manage.py migrate
+
+if [ $? -ne 0 ]; then
+    echo "Ошибка при выполнении migrate."
+    exit 1
+fi
 
 # Создание суперпользователя напрямую
 echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('$ADMIN_USERNAME', '$ADMIN_EMAIL', '$ADMIN_PASSWORD')" | python manage.py shell
 
 if [ $? -ne 0 ]; then
-    echo "Ошибка при настройке Django (makemigrations/migrate/createsuperuser). Выход."
+    echo "Ошибка при создании суперпользователя."
     exit 1
 fi
 
@@ -268,7 +293,7 @@ echo "Django успешно настроена и суперпользовате
 DB_USER="vless_panel_user"
 DB_NAME="vless_panel_db"
 # Извлекаем случайный пароль из settings.py
-DB_PASSWORD=$(grep "PASSWORD" "$PROJECT_NAME/settings.py" | grep -o "'[^']*'" | sed -n 2p | sed "s/'//g")
+DB_PASSWORD=$(grep "PASSWORD" "$PROJECT_DIR/settings.py" | grep -o "'[^']*'" | sed -n 2p | sed "s/'//g")
 
 # Переключаемся на пользователя postgres и создаем БД и пользователя
 sudo -u postgres psql -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_user WHERE usename = '$DB_USER') THEN CREATE USER $DB_USER WITH PASSWORD '$DB_PASSWORD'; END IF; END \$\$;"
@@ -283,7 +308,7 @@ After=network.target
 [Service]
 Type=exec
 User=root
-WorkingDirectory=$PYTHON_VENV_PATH/$PROJECT_NAME
+WorkingDirectory=$PROJECT_DIR
 Environment=PATH=$PYTHON_VENV_PATH/bin
 ExecStart=$PYTHON_VENV_PATH/bin/python manage.py runserver 0.0.0.0:8000
 Restart=always
@@ -331,7 +356,7 @@ server {
     }
 
     location /static/ {
-        alias $PYTHON_VENV_PATH/$PROJECT_NAME/staticfiles/;
+        alias $PROJECT_DIR/staticfiles/;
     }
 }
 EOF
