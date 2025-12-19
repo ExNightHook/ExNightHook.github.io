@@ -1,0 +1,774 @@
+{
+  "client.dll": {
+    "classes": {
+      "CClientAlphaProperty": {
+        "fields": {
+          "m_bAlphaOverride": 0,
+          "m_bShadowAlphaOverride": 0,
+          "m_flFadeScale": 28,
+          "m_flRenderFxDuration": 36,
+          "m_flRenderFxStartTime": 32,
+          "m_nAlpha": 19,
+          "m_nDesyncOffset": 20,
+          "m_nDistFadeEnd": 26,
+          "m_nDistFadeStart": 24,
+          "m_nRenderFX": 16,
+          "m_nRenderMode": 17,
+          "m_nReserved": 0,
+          "m_nReserved2": 22
+        },
+        "metadata": [],
+        "parent": null
+      },
+      "CCompositeMaterialEditorDoc": {
+        "fields": {
+          "m_KVthumbnail": 40,
+          "m_Points": 16,
+          "m_nVersion": 8
+        },
+        "metadata": [
+          {
+            "name": "MGetKV3ClassDefaults",
+            "type": "Unknown"
+          }
+        ],
+        "parent": null
+      },
+      "CFlashlightEffect": {
+        "fields": {
+          "m_FlashlightTexture": 96,
+          "m_MuzzleFlashTexture": 104,
+          "m_bCastsShadows": 88,
+          "m_bIsOn": 16,
+          "m_bMuzzleFlashEnabled": 32,
+          "m_flCurrentPullBackDist": 92,
+          "m_flFarZ": 80,
+          "m_flFov": 76,
+          "m_flLinearAtten": 84,
+          "m_flMuzzleFlashBrightness": 36,
+          "m_quatMuzzleFlashOrientation": 48,
+          "m_textureName": 112,
+          "m_vecMuzzleFlashOrigin": 64
+        },
+        "metadata": [],
+        "parent": null
+      },
+      "CGlobalLightBase": {
+        "fields": {
+          "m_AmbientColor1": 110,
+          "m_AmbientColor2": 114,
+          "m_AmbientColor3": 118,
+          "m_AmbientDirection": 56,
+          "m_InspectorSpecularDirection": 80,
+          "m_LightColor": 106,
+          "m_ShadowDirection": 44,
+          "m_SpecularColor": 100,
+          "m_SpecularDirection": 68,
+          "m_SpotLightAngles": 32,
+          "m_SpotLightOrigin": 20,
+          "m_ViewAngles": 224,
+          "m_ViewOrigin": 212,
+          "m_WorldPoints": 240,
+          "m_bBackgroundClearNotRequired": 142,
+          "m_bEnableSeparateSkyboxFog": 196,
+          "m_bEnableShadows": 140,
+          "m_bEnabled": 105,
+          "m_bOldEnableShadows": 141,
+          "m_bSpotLight": 16,
+          "m_bStartDisabled": 104,
+          "m_flAmbientScale1": 176,
+          "m_flAmbientScale2": 180,
+          "m_flCloud1Direction": 152,
+          "m_flCloud1Speed": 148,
+          "m_flCloud2Direction": 160,
+          "m_flCloud2Speed": 156,
+          "m_flCloudScale": 144,
+          "m_flFOV": 128,
+          "m_flFarZ": 136,
+          "m_flFoWDarkness": 192,
+          "m_flGroundScale": 184,
+          "m_flLightScale": 188,
+          "m_flNearZ": 132,
+          "m_flSpecularIndependence": 96,
+          "m_flSpecularPower": 92,
+          "m_flSunDistance": 124,
+          "m_flViewFoV": 236,
+          "m_hEnvSky": 1212,
+          "m_hEnvWind": 1208,
+          "m_vFogOffsetLayer0": 1192,
+          "m_vFogOffsetLayer1": 1200,
+          "m_vFowColor": 200
+        },
+        "metadata": [],
+        "parent": null
+      },
+      "CInterpolatedValue": {
+        "fields": {
+          "m_flEndTime": 4,
+          "m_flEndValue": 12,
+          "m_flStartTime": 0,
+          "m_flStartValue": 8,
+          "m_nInterpType": 16
+        },
+        "metadata": [],
+        "parent": null
+      },
+      "CInventoryImageData": {
+        "fields": {
+          "inventory_image_data": 16,
+          "m_nNodeType": 0,
+          "name": 8
+        },
+        "metadata": [
+          {
+            "name": "MGetKV3ClassDefaults",
+            "type": "Unknown"
+          },
+          {
+            "name": "MVDataOutlinerDetailExpr",
+            "type": "Unknown"
+          },
+          {
+            "name": "MVDataOverlayType",
+            "type": "Unknown"
+          },
+          {
+            "name": "MVDataPreviewWidget",
+            "type": "Unknown"
+          },
+          {
+            "name": "MVDataOutlinerLeafNameFn",
+            "type": "Unknown"
+          },
+          {
+            "name": "MVDataOutlinerLeafColorFn",
+            "type": "Unknown"
+          },
+          {
+            "name": "MVDataOutlinerLeafDetailFn",
+            "type": "Unknown"
+          },
+          {
+            "name": "MVDataVirtualNodeFactoryFn",
+            "type": "Unknown"
+          },
+          {
+            "name": "MVDataPreLoadFixupFn",
+            "type": "Unknown"
+          },
+          {
+            "name": "MVDataPostSaveFixupFn",
+            "type": "Unknown"
+          }
+        ],
+        "parent": null
+      },
+      "CNmEventConsumerHudModelArmsAttributes": {
+        "fields": {},
+        "metadata": [
+          {
+            "name": "MGetKV3ClassDefaults",
+            "type": "Unknown"
+          }
+        ],
+        "parent": null
+      },
+      "CPlayerSprayDecalRenderHelper": {
+        "fields": {},
+        "metadata": [],
+        "parent": null
+      },
+      "C_CSGO_PreviewPlayer_GraphController": {
+        "fields": {
+          "m_bCT": 888,
+          "m_nTeamPreviewRandom": 776,
+          "m_pszCharacterMode": 616,
+          "m_pszEndOfMatchCelebration": 736,
+          "m_pszTeamPreviewPosition": 696,
+          "m_pszTeamPreviewVariant": 656,
+          "m_pszWeaponState": 808,
+          "m_pszWeaponType": 848
+        },
+        "metadata": [],
+        "parent": null
+      },
+      "C_CommandContext": {
+        "fields": {
+          "command_number": 160,
+          "needsprocessing": 0
+        },
+        "metadata": [],
+        "parent": null
+      },
+      "C_IronSightController": {
+        "fields": {
+          "m_angDeltaAverage": 48,
+          "m_angViewLast": 144,
+          "m_bIronSightAvailable": 16,
+          "m_flFiringInaccuracyExtraWidthMultiplier": 164,
+          "m_flInterpolationLastUpdated": 44,
+          "m_flIronSightAmount": 20,
+          "m_flIronSightAmountBiased": 28,
+          "m_flIronSightAmountBiased_Interpolated": 40,
+          "m_flIronSightAmountGained": 24,
+          "m_flIronSightAmountGained_Interpolated": 36,
+          "m_flIronSightAmount_Interpolated": 32,
+          "m_flSpeedRatio": 168,
+          "m_vecDotCoords": 156
+        },
+        "metadata": [],
+        "parent": null
+      },
+      "CompMatMutatorCondition_t": {
+        "fields": {
+          "m_bPassWhenTrue": 32,
+          "m_nMutatorCondition": 0,
+          "m_strMutatorConditionContainerName": 8,
+          "m_strMutatorConditionContainerVarName": 16,
+          "m_strMutatorConditionContainerVarValue": 24
+        },
+        "metadata": [
+          {
+            "name": "MGetKV3ClassDefaults",
+            "type": "Unknown"
+          },
+          {
+            "name": "MPropertyElementNameFn",
+            "type": "Unknown"
+          }
+        ],
+        "parent": null
+      },
+      "CompMatPropertyMutator_t": {
+        "fields": {
+          "m_bCaptureInRenderDoc": 785,
+          "m_bEnabled": 0,
+          "m_bIsScratchTarget": 772,
+          "m_bSplatDebugInfo": 784,
+          "m_colDrawText_Color": 872,
+          "m_nMutatorCommandType": 4,
+          "m_nResolution": 768,
+          "m_nSetValue_Value": 104,
+          "m_strCompressionFormat": 776,
+          "m_strCopyKeysWithSuffix_FindSuffix": 88,
+          "m_strCopyKeysWithSuffix_InputContainerSrc": 80,
+          "m_strCopyKeysWithSuffix_ReplaceSuffix": 96,
+          "m_strCopyMatchingKeys_InputContainerSrc": 72,
+          "m_strCopyProperty_InputContainerProperty": 24,
+          "m_strCopyProperty_InputContainerSrc": 16,
+          "m_strCopyProperty_TargetProperty": 32,
+          "m_strDrawText_Font": 880,
+          "m_strDrawText_InputContainerProperty": 856,
+          "m_strDrawText_InputContainerSrc": 848,
+          "m_strGenerateTexture_InitialContainer": 760,
+          "m_strGenerateTexture_TargetParam": 752,
+          "m_strInitWith_Container": 8,
+          "m_strPopInputQueue_Container": 840,
+          "m_strRandomRollInputVars_SeedInputVar": 40,
+          "m_vecConditionalMutators": 816,
+          "m_vecConditions": 888,
+          "m_vecDrawText_Position": 864,
+          "m_vecRandomRollInputVars_InputVarsToRoll": 48,
+          "m_vecTexGenInstructions": 792
+        },
+        "metadata": [
+          {
+            "name": "MGetKV3ClassDefaults",
+            "type": "Unknown"
+          },
+          {
+            "name": "MPropertyElementNameFn",
+            "type": "Unknown"
+          }
+        ],
+        "parent": null
+      },
+      "CompositeMaterialAssemblyProcedure_t": {
+        "fields": {
+          "m_vecCompMatIncludes": 0,
+          "m_vecCompositeInputContainers": 48,
+          "m_vecMatchFilters": 24,
+          "m_vecPropertyMutators": 72
+        },
+        "metadata": [
+          {
+            "name": "MGetKV3ClassDefaults",
+            "type": "Unknown"
+          },
+          {
+            "name": "MPropertyElementNameFn",
+            "type": "Unknown"
+          }
+        ],
+        "parent": null
+      },
+      "CompositeMaterialEditorPoint_t": {
+        "fields": {
+          "m_ChildModelName": 256,
+          "m_KVModelStateChoices": 232,
+          "m_ModelName": 0,
+          "m_bEnableChildModel": 248,
+          "m_flCycle": 228,
+          "m_nSequenceIndex": 224,
+          "m_vecCompositeMaterialAssemblyProcedures": 480,
+          "m_vecCompositeMaterials": 504
+        },
+        "metadata": [
+          {
+            "name": "MGetKV3ClassDefaults",
+            "type": "Unknown"
+          }
+        ],
+        "parent": null
+      },
+      "CompositeMaterialInputContainer_t": {
+        "fields": {
+          "m_bEnabled": 0,
+          "m_bExposeExternally": 280,
+          "m_nCompositeMaterialInputContainerSourceType": 4,
+          "m_strAlias": 240,
+          "m_strAttrName": 232,
+          "m_strAttrNameForVar": 272,
+          "m_strSpecificContainerMaterial": 8,
+          "m_vecLooseVariables": 248
+        },
+        "metadata": [
+          {
+            "name": "MGetKV3ClassDefaults",
+            "type": "Unknown"
+          },
+          {
+            "name": "MPropertyElementNameFn",
+            "type": "Unknown"
+          }
+        ],
+        "parent": null
+      },
+      "CompositeMaterialInputLooseVariable_t": {
+        "fields": {
+          "m_bExposeExternally": 8,
+          "m_bExposedVariableIsFixedRange": 32,
+          "m_bHasFloatBounds": 88,
+          "m_bValueBoolean": 68,
+          "m_cValueColor4": 140,
+          "m_flValueFloatW": 128,
+          "m_flValueFloatW_Max": 136,
+          "m_flValueFloatW_Min": 132,
+          "m_flValueFloatX": 92,
+          "m_flValueFloatX_Max": 100,
+          "m_flValueFloatX_Min": 96,
+          "m_flValueFloatY": 104,
+          "m_flValueFloatY_Max": 112,
+          "m_flValueFloatY_Min": 108,
+          "m_flValueFloatZ": 116,
+          "m_flValueFloatZ_Max": 124,
+          "m_flValueFloatZ_Min": 120,
+          "m_nPanoramaRenderRes": 640,
+          "m_nTextureType": 616,
+          "m_nValueIntW": 84,
+          "m_nValueIntX": 72,
+          "m_nValueIntY": 76,
+          "m_nValueIntZ": 80,
+          "m_nValueSystemVar": 144,
+          "m_nVariableType": 64,
+          "m_strExposedFriendlyGroupName": 24,
+          "m_strExposedFriendlyName": 16,
+          "m_strExposedHiddenWhenTrue": 48,
+          "m_strExposedValueList": 56,
+          "m_strExposedVisibleWhenTrue": 40,
+          "m_strName": 0,
+          "m_strPanoramaPanelPath": 632,
+          "m_strResourceMaterial": 152,
+          "m_strString": 624,
+          "m_strTextureCompilationVtexTemplate": 608,
+          "m_strTextureContentAssetPath": 376,
+          "m_strTextureRuntimeResourcePath": 384
+        },
+        "metadata": [
+          {
+            "name": "MGetKV3ClassDefaults",
+            "type": "Unknown"
+          },
+          {
+            "name": "MPropertyElementNameFn",
+            "type": "Unknown"
+          }
+        ],
+        "parent": null
+      },
+      "CompositeMaterialMatchFilter_t": {
+        "fields": {
+          "m_bPassWhenTrue": 24,
+          "m_nCompositeMaterialMatchFilterType": 0,
+          "m_strMatchFilter": 8,
+          "m_strMatchValue": 16
+        },
+        "metadata": [
+          {
+            "name": "MGetKV3ClassDefaults",
+            "type": "Unknown"
+          },
+          {
+            "name": "MPropertyElementNameFn",
+            "type": "Unknown"
+          }
+        ],
+        "parent": null
+      },
+      "CompositeMaterial_t": {
+        "fields": {
+          "m_FinalKVs": 88,
+          "m_PreGenerationKVs": 24,
+          "m_TargetKVs": 8,
+          "m_vecGeneratedTextures": 128
+        },
+        "metadata": [
+          {
+            "name": "MPropertyElementNameFn",
+            "type": "Unknown"
+          }
+        ],
+        "parent": null
+      },
+      "GeneratedTextureHandle_t": {
+        "fields": {
+          "m_strBitmapName": 0
+        },
+        "metadata": [
+          {
+            "name": "MPropertyElementNameFn",
+            "type": "Unknown"
+          }
+        ],
+        "parent": null
+      },
+      "IClientAlphaProperty": {
+        "fields": {},
+        "metadata": [],
+        "parent": null
+      },
+      "TimedEvent": {
+        "fields": {
+          "m_TimeBetweenEvents": 0,
+          "m_fNextEvent": 4
+        },
+        "metadata": [],
+        "parent": null
+      },
+      "inv_image_camera_t": {
+        "fields": {
+          "angle": 0,
+          "fov": 12,
+          "orbit_distance": 48,
+          "target": 24,
+          "target_nudge": 36,
+          "zfar": 20,
+          "znear": 16
+        },
+        "metadata": [
+          {
+            "name": "MGetKV3ClassDefaults",
+            "type": "Unknown"
+          }
+        ],
+        "parent": null
+      },
+      "inv_image_data_t": {
+        "fields": {
+          "camera": 48,
+          "item": 16,
+          "light0": 156,
+          "light1": 188,
+          "lightfill": 128,
+          "lightsun": 100,
+          "map": 0
+        },
+        "metadata": [
+          {
+            "name": "MGetKV3ClassDefaults",
+            "type": "Unknown"
+          }
+        ],
+        "parent": null
+      },
+      "inv_image_item_t": {
+        "fields": {
+          "angle": 12,
+          "pose_sequence": 24,
+          "position": 0
+        },
+        "metadata": [
+          {
+            "name": "MGetKV3ClassDefaults",
+            "type": "Unknown"
+          }
+        ],
+        "parent": null
+      },
+      "inv_image_light_barn_t": {
+        "fields": {
+          "angle": 12,
+          "brightness": 24,
+          "color": 0,
+          "orbit_distance": 28
+        },
+        "metadata": [
+          {
+            "name": "MGetKV3ClassDefaults",
+            "type": "Unknown"
+          }
+        ],
+        "parent": null
+      },
+      "inv_image_light_fill_t": {
+        "fields": {
+          "angle": 12,
+          "brightness": 24,
+          "color": 0
+        },
+        "metadata": [
+          {
+            "name": "MGetKV3ClassDefaults",
+            "type": "Unknown"
+          }
+        ],
+        "parent": null
+      },
+      "inv_image_light_sun_t": {
+        "fields": {
+          "angle": 12,
+          "brightness": 24,
+          "color": 0
+        },
+        "metadata": [
+          {
+            "name": "MGetKV3ClassDefaults",
+            "type": "Unknown"
+          }
+        ],
+        "parent": null
+      },
+      "inv_image_map_t": {
+        "fields": {
+          "map_name": 0,
+          "map_rotation": 8
+        },
+        "metadata": [
+          {
+            "name": "MGetKV3ClassDefaults",
+            "type": "Unknown"
+          }
+        ],
+        "parent": null
+      }
+    },
+    "enums": {
+      "Negativegendarmerie_fem_epic": {
+        "alignment": 0,
+        "members": {},
+        "type": "unknown"
+      },
+      "Radio_FollowMegendarmerie_fem_epic": {
+        "alignment": 0,
+        "members": {},
+        "type": "unknown"
+      },
+      "Radio_GoToLocHostageEscapeZonegendarmerie_fem_epic": {
+        "alignment": 0,
+        "members": {},
+        "type": "unknown"
+      },
+      "Radio_GoToLocStairsgendarmerie_fem_epic": {
+        "alignment": 0,
+        "members": {},
+        "type": "unknown"
+      },
+      "Radio_ImAtLocLonggendarmerie_fem_epic": {
+        "alignment": 0,
+        "members": {},
+        "type": "unknown"
+      },
+      "Radio_LocHolegendarmerie_fem_epic": {
+        "alignment": 0,
+        "members": {},
+        "type": "unknown"
+      },
+      "Radio_LocRampgendarmerie_fem_epic": {
+        "alignment": 0,
+        "members": {},
+        "type": "unknown"
+      },
+      "Radio_NeedBackupgendarmerie_fem_epic": {
+        "alignment": 0,
+        "members": {},
+        "type": "unknown"
+      },
+      "Radio_OMWLocPalacegendarmerie_fem_epic": {
+        "alignment": 0,
+        "members": {},
+        "type": "unknown"
+      },
+      "SpottedBombergendarmerie_fem_epic": {
+        "alignment": 0,
+        "members": {},
+        "type": "unknown"
+      },
+      "TLK_CW_GoAgendarmerie_fem_epic": {
+        "alignment": 0,
+        "members": {},
+        "type": "unknown"
+      },
+      "TLK_CW_GuardingDroppedBombgendarmerie_fem_epic": {
+        "alignment": 0,
+        "members": {},
+        "type": "unknown"
+      },
+      "TLK_CW_InPositiongendarmerie_fem_epic": {
+        "alignment": 0,
+        "members": {},
+        "type": "unknown"
+      },
+      "TLK_Radio_EcoRoundgendarmerie_fem_epic": {
+        "alignment": 0,
+        "members": {},
+        "type": "unknown"
+      },
+      "TLK_Radio_SawHeadshotgendarmerie_fem_epic": {
+        "alignment": 0,
+        "members": {},
+        "type": "unknown"
+      },
+      "WonRoundCleangendarmerie_fem_epic": {
+        "alignment": 0,
+        "members": {},
+        "type": "unknown"
+      },
+      "_____": {
+        "alignment": 0,
+        "members": {
+          "": 0
+        },
+        "type": "unknown"
+      },
+      "____i_": {
+        "alignment": 153,
+        "members": {
+          "": -5908722702882532338
+        },
+        "type": "unknown"
+      },
+      "___i_": {
+        "alignment": 36,
+        "members": {
+          "": -8574853682285865842
+        },
+        "type": "unknown"
+      },
+      "___u_": {
+        "alignment": 5,
+        "members": {
+          "": 4262982938375312500
+        },
+        "type": "unknown"
+      },
+      "__b___": {
+        "alignment": 0,
+        "members": {
+          "": 0,
+          " \u0014�̂\u0002": 2765452095680,
+          "@\u0011b��\u0002": 131072,
+          "@\u0014b��\u0002": 2760018619856,
+          "@\u0017b��\u0002": 0,
+          "@\u001ab��\u0002": 2765271842832,
+          "@ b��\u0002": 327680,
+          "@#b��\u0002": 2760806107584,
+          "@&b��\u0002": 2760800760688,
+          "@)b��\u0002": 2764575811344,
+          "@,b��\u0002": 2760031740384,
+          "@/b��\u0002": 0,
+          "@2b��\u0002": 0,
+          "@8b��\u0002": 0,
+          "@;b��\u0002": 2760025207728,
+          "@>b��\u0002": 2760020411024,
+          "@Ab��\u0002": 0,
+          "@Db��\u0002": 2765254209152,
+          "@Gb��\u0002": 0,
+          "@Jb��\u0002": 2760025217440,
+          "@Pb��\u0002": 0,
+          "@UD��\u0002": 2765916030736,
+          "P\u0013��\u0002": 2766075401728,
+          "p�R��\u0002": 2765910723760,
+          "�\fb��\u0002": 0,
+          "�\u000fb��\u0002": 0,
+          "�\u0010b��\u0002": 0,
+          "�\u0013b��\u0002": 0,
+          "�\u0015b��\u0002": 0,
+          "�\u0016b��\u0002": 0,
+          "�\u0018b��\u0002": 2760025206032,
+          "�\u0019b��\u0002": 2764661344496,
+          "�\u001bb��\u0002": 2760038555856,
+          "�\u001cb��\u0002": 0,
+          "�!b��\u0002": 131072,
+          "�\"b��\u0002": 327680,
+          "�$b��\u0002": 2759986913168,
+          "�%b��\u0002": 0,
+          "�'b��\u0002": 0,
+          "�(b��\u0002": 2764548260112,
+          "�*b��\u0002": 0,
+          "�+b��\u0002": 0,
+          "�-b��\u0002": 0,
+          "�.b��\u0002": 0,
+          "�0b��\u0002": 0,
+          "�1b��\u0002": 2760018168832,
+          "�6b��\u0002": 0,
+          "�7b��\u0002": 2762828918240,
+          "�9b��\u0002": 0,
+          "�:b��\u0002": 0,
+          "�<b��\u0002": 2760801601840,
+          "�=b��\u0002": 2759986913616,
+          "�?b��\u0002": 0,
+          "�@b��\u0002": 2762828918048,
+          "�Bb��\u0002": 0,
+          "�Cb��\u0002": 2765207317920,
+          "�Fb��\u0002": 0,
+          "�Hb��\u0002": 2761080529696,
+          "�Ib��\u0002": 2764597706272,
+          "�Kb��\u0002": 2760806107008,
+          "�Lb��\u0002": 2760018619792,
+          "�Nb��\u0002": 0,
+          "�Ob��\u0002": 0,
+          "�Qb��\u0002": 2759950799088,
+          "�Rb��\u0002": 2760795388864,
+          "�f>�\u0002": 2765452116784
+        },
+        "type": "unknown"
+      },
+      "__f__": {
+        "alignment": 166,
+        "members": {
+          "": 0
+        },
+        "type": "unknown"
+      },
+      "__l___": {
+        "alignment": 0,
+        "members": {
+          "": 0
+        },
+        "type": "unknown"
+      },
+      "radio_locknloadgendarmerie_fem_epic_1_": {
+        "alignment": 0,
+        "members": {},
+        "type": "unknown"
+      },
+      "x____": {
+        "alignment": 166,
+        "members": {
+          "": 0
+        },
+        "type": "unknown"
+      }
+    }
+  }
+}
