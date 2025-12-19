@@ -20,6 +20,7 @@
   },
   "engine2.dll": {
     "dwBuildNumber": 6231012,
+    "dwNetworkGameClient": 9352504,
     "dwNetworkGameClient_clientTickCount": 912,
     "dwNetworkGameClient_deltaTick": 572,
     "dwNetworkGameClient_isBackgroundMap": 2888807,
